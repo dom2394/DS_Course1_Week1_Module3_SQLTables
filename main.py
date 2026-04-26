@@ -132,9 +132,8 @@ JOIN orders ord
 ON c.customerNumber = ord.customerNumber
 JOIN orderdetails od
 ON ord.orderNumber = od.orderNumber
-JOIN low_products lp
-ON od.productCode = lp.productCode
-ORDER BY e.firstName;
+WHERE od.productCode IN low_products
+ORDER BY e.firstName ASC;
 """, conn)
 
 # close connection
