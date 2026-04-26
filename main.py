@@ -45,8 +45,7 @@ ORDER BY c.contactLastName;
 
 
 # PART 3: BUILT-IN FUNCTION
-
-df_payments = pd.read_sql("""
+df_payment = pd.read_sql("""
 SELECT c.contactFirstName, c.contactLastName,
        p.amount, p.paymentDate
 FROM customers c
@@ -125,13 +124,18 @@ ON c.customerNumber = ord.customerNumber
 JOIN orderdetails od
 ON ord.orderNumber = od.orderNumber
 WHERE od.productCode IN (
-    SELECT od2.productCode
-    FROM orderdetails od2
-    JOIN orders o2
-    ON od2.orderNumber = o2.orderNumber
-    GROUP BY od2.productCode
-    HAVING COUNT(DISTINCT o2.customerNumber) < 20
-);
+    SELECT productCode
+    FROM (
+        SELECT od2.productCode,
+               COUNT(DISTINCT o2.customerNumber) AS customer_count
+        FROM orderdetails od2
+        JOIN orders o2
+        ON od2.orderNumber = o2.orderNumber
+        GROUP BY od2.productCode
+        HAVING COUNT(DISTINCT o2.customerNumber) < 20
+    )
+)
+ORDER BY e.firstName ASC;
 """, conn)
 
 # close connection
