@@ -26,7 +26,7 @@ WHERE e.employeeNumber IS NULL;
 
 # PART 2: TYPES OF JOIN
 
-df_employees_office = pd.read_sql("""
+df_employee = pd.read_sql("""
 SELECT e.firstName, e.lastName, o.city, o.state
 FROM employees e
 LEFT JOIN offices o
@@ -34,7 +34,7 @@ ON e.officeCode = o.officeCode
 ORDER BY e.firstName, e.lastName;
 """, conn)
 
-df_customers_no_orders = pd.read_sql("""
+df_contacts = pd.read_sql("""
 SELECT c.contactFirstName, c.contactLastName, c.phone, c.salesRepEmployeeNumber
 FROM customers c
 LEFT JOIN orders o
@@ -57,7 +57,7 @@ ORDER BY CAST(p.amount AS REAL) DESC;
 
 # PART 4: GROUP BY
 
-df_high_credit_employees = pd.read_sql("""
+df_credit = pd.read_sql("""
 SELECT e.employeeNumber, e.firstName, e.lastName,
        COUNT(c.customerNumber) AS num_customers
 FROM employees e
@@ -68,7 +68,7 @@ HAVING AVG(c.creditLimit) > 90000
 ORDER BY num_customers DESC;
 """, conn)
 
-df_product_sales = pd.read_sql("""
+df_product_sold = pd.read_sql("""
 SELECT p.productName,
        COUNT(DISTINCT o.orderNumber) AS numorders,
        SUM(od.quantityOrdered) AS totalunits
@@ -83,7 +83,7 @@ ORDER BY totalunits DESC;
 
 # PART 5: MULTIPLE JOINS
 
-df_product_customers = pd.read_sql("""
+df_total_customers = pd.read_sql("""
 SELECT p.productName,
        p.productCode,
        COUNT(DISTINCT o.customerNumber) AS numpurchasers
@@ -96,7 +96,7 @@ GROUP BY p.productCode
 ORDER BY numpurchasers DESC;
 """, conn)
 
-df_customers_per_office = pd.read_sql("""
+df_customers = pd.read_sql("""
 SELECT o.officeCode, o.city,
        COUNT(c.customerNumber) AS n_customers
 FROM offices o
@@ -109,7 +109,7 @@ GROUP BY o.officeCode, o.city;
 
 # PART 6: SUBQUERY
 
-df_low_product_employees = pd.read_sql("""
+df_under_20 = pd.read_sql("""
 SELECT DISTINCT e.employeeNumber,
        e.firstName,
        e.lastName,
