@@ -109,29 +109,23 @@ GROUP BY o.officeCode, o.city;
 # PART 6: SUBQUERY
 
 df_under_20 = pd.read_sql("""
-SELECT DISTINCT e.employeeNumber,
-       e.firstName,
-       e.lastName,
-       o.city,
-       o.officeCode
+SELECT DISTINCT
+       e.employeeNumber, e.firstName, e.lastName,
+       o.city, o.officeCode
 FROM employees e
-JOIN offices o
-ON e.officeCode = o.officeCode
-JOIN customers c
-ON e.employeeNumber = c.salesRepEmployeeNumber
-JOIN orders ord
-ON c.customerNumber = ord.customerNumber
-JOIN orderdetails od
-ON ord.orderNumber = od.orderNumber
+JOIN offices o       ON e.officeCode      = o.officeCode
+JOIN customers c     ON e.employeeNumber  = c.salesRepEmployeeNumber
+JOIN orders ord      ON c.customerNumber  = ord.customerNumber
+JOIN orderdetails od ON ord.orderNumber   = od.orderNumber
 WHERE od.productCode IN (
-    SELECT od2.productCode
-    FROM orderdetails od2
-    JOIN orders o2
-    ON od2.orderNumber = o2.orderNumber
-    GROUP BY od2.productCode
+    SELECT p.productCode
+    FROM products p
+    JOIN orderdetails od2 ON p.productCode   = od2.productCode
+    JOIN orders o2        ON od2.orderNumber = o2.orderNumber
+    GROUP BY p.productCode
     HAVING COUNT(DISTINCT o2.customerNumber) < 20
 )
-ORDER BY e.firstName ASC;
+ORDER BY e.employeeNumber
 """, conn)
 
 # close connection
